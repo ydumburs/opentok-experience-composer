@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <title>EC MANAGE</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      padding: 2em;
+      background: #f9f9f9;
+    }
+
+    button {
+      padding: 10px 20px;
+      font-size: 1rem;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+
+    .status {
+      margin-top: 1em;
+      font-family: monospace;
+      color: #333;
+    }
+  </style>
+</head>
+
+<body>
+  <h1>Experience Composer Manager</h1>
+  <button id="createSession">Create Session&Token</button>
+  <button id="startEc">Start EC</button>
+  <button id="stopEc">Stop EC</button>
+  <button id="startArchive">Start Archive</button>
+  <button id="stopArchive">Stop Archive</button>
+  <button id="startBroadcast">Start Broadcast</button>
+  <button id="stopBroadcast">Stop Broadcast</button>
+  <div class="status" id="statusBox"></div>
+  <script>
+    function logStatus(message) {
+      const box = document.getElementById('statusBox');
+      const line = document.createElement('div');
+      const timestamp = `[${new Date().toLocaleTimeString()}] `;
+      line.innerHTML = timestamp + message.replace(/\n/g, '<br>');
+      box.appendChild(line);
+      box.scrollTop = box.scrollHeight; // auto scrolling
+    }
+    let currentSessionId = null;
+    let currentToken = null;
+    let currentComposerId = null;
+    let currentArchiveId = null;
+    let currentBroadcastId = null;
+
+    document.getElementById('createSession').addEventListener('click', async () => {
+      const res = await fetch('/create-session', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' }
+      });
+      const box = document.getElementById('statusBox');
+      if (res.ok) {
+        const data = await res.json();
+        currentSessionId = data.sessionId;
+        currentToken = data.token;
+        logStatus(`Session and Token created!\nSessionID: ${currentSessionId} \nToken: ${currentToken}\n\n`)
+      } else {
+        const err = await res.json();
+        logStatus(`Error!\n: ${err.error}`)
+      }
+    });
+
+    document.getElementById('startEc').addEventListener('click', async () => {
+      const res = await fetch('/start-composer', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          sessionId: currentSessionId,
+          token: currentToken
+        })
+      });
+      const box = document.getElementById('statusBox');
+      if (res.ok) {
+        const data = await res.json();
+        currentComposerId = data.composerId;
+        logStatus(`EC started!\nID: ${data.composerId} \nStatus: ${data.status}\n\n`)
+      } else {
+        const err = await res.json();
+        logStatus(`Error!\n: ${err.error}`)
+      }
+    });
+
+    document.getElementById('stopEc').addEventListener('click', async () => {
+      const res = await fetch('/stop-composer', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          composerId: currentComposerId
+        })
+      });
+      const box = document.getElementById('statusBox');
+      if (res.ok) {
+        const data = await res.json();
+        logStatus(`EC stopped!\n${data.message}\n\n`)
+      } else {
+        const err = await res.json();
+        logStatus(`Error!\n: ${err.error}`)
+      }
+    });
+
+    document.getElementById('startArchive').addEventListener('click', async () => {
+      const res = await fetch('/start-archive', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          sessionId: currentSessionId,
+        })
+      });
+      const box = document.getElementById('statusBox');
+      if (res.ok) {
+        const data = await res.json();
+        currentArchiveId = data.archiveId;
+        logStatus(`Archive started!\nID: ${data.archiveId} \nStatus: ${data.status}\n\n`)
+      } else {
+        const err = await res.json();
+        logStatus(`Error!\n: ${err.error}`)
+      }
+    });
+
+    document.getElementById('stopArchive').addEventListener('click', async () => {
+      const res = await fetch('/stop-archive', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          archiveId: currentArchiveId
+        })
+      });
+      const box = document.getElementById('statusBox');
+      if (res.ok) {
+        const data = await res.json();
+        logStatus(`Archive stopped!\nID: ${data.archiveId} \nStatus: ${data.status}\n\n`)
+      } else {
+        const err = await res.json();
+        logStatus(`Error!\n: ${err.error}`)
+      }
+    });
+
+    document.getElementById('startBroadcast').addEventListener('click', async () => {
+      const res = await fetch('/start-broadcast', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          sessionId: currentSessionId,
+        })
+      });
+      const box = document.getElementById('statusBox');
+      if (res.ok) {
+        const data = await res.json();
+        currentBroadcastId = data.broadcastId;
+        logStatus(`Broadcast started!\nID: ${data.broadcastId} \nStatus: ${data.status} \nHlsUrl: ${data.hlsUrl}\n\n`)
+      } else {
+        const err = await res.json();
+        logStatus(`Error!\n: ${err.error}`)
+      }
+    });
+
+    document.getElementById('stopBroadcast').addEventListener('click', async () => {
+      const res = await fetch('/stop-broadcast', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          broadcastId: currentBroadcastId
+        })
+      });
+      const box = document.getElementById('statusBox');
+      if (res.ok) {
+        const data = await res.json();
+        logStatus(`Broadcast stopped!\nID: ${data.broadcastId} \nStatus: ${data.status}\n\n`)
+      } else {
+        const err = await res.json();
+        logStatus(`Error!\n: ${err.error}`)
+      }
+    });
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <title>PUBLISH</title>
+  <script src="https://static.opentok.com/v2/js/opentok.min.js"></script>
+  <style>
+    body {
+      margin: 0;
+      display: flex;
+      height: 100vh;
+      font-family: sans-serif;
+    }
+
+    #video-container {
+      flex: 1;
+      background: #000;
+      display: flex;
+      flex-direction: column;
+    }
+
+    #publisher {
+      height: 50%;
+      width: 100%
+    }
+
+    #subscriber-container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: center;
+      height: 50%;
+    }
+
+    .video-box {
+      width: 50%;
+      height: 50%;
+      box-sizing: border-box;
+      padding: 2px;
+    }
+
+    #content-container {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+
+    iframe {
+      width: 90%;
+      height: 80%;
+      border: none;
+      box-shadow: 0 0 12px rgba(0, 0, 0, 0.2);
+      border-radius: 8px;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="video-container">
+    <div id="publisher"></div>
+    <div id="subscriber-container"></div>
+  </div>
+  <div id="content-container">
+    <iframe
+      src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d11126.310629254733!2d136.8877649817688!3d36.25779528601932!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x5ff871b0b6bf25e7%3A0xccc551bb9d5805f8!2sShirakawa-go!5e1!3m2!1sen!2suk!4v1746635941851!5m2!1sen!2suk"
+      allowfullscreen="" loading="lazy"></iframe>
+  </div>
+  <script>
+    const apiKey = "{{API_KEY}}";
+    const sessionId = "{{SESSION_ID}}";
+    const token = "{{TOKEN}}";
+
+    const session = OT.initSession(apiKey, sessionId);
+
+    session.on("streamCreated", (event) => {
+      const streamDiv = document.createElement("div");
+      streamDiv.className = "video-box";
+      document.getElementById("subscriber-container").appendChild(streamDiv);
+      const subscriber = session.subscribe(event.stream, streamDiv, {
+        insertMode: "append",
+        width: "100%",
+        height: "100%",
+        style: {
+          audioLevelDisplayMode: "on",
+          videoDisabledDisplayMode: "on"
+        },
+      });
+    });
+
+    const publisher = OT.initPublisher("publisher", {
+      fitMode: "contain",
+      width: "100%",
+      height: "100%"
+    });
+
+    session.connect(token, (err) => {
+      if (err) {
+        console.error("Connection failed:", err.message);
+        return;
+      } else {
+        session.publish(publisher, (err) => {
+          if (err) {
+            console.error("Publish error:", err.message);
+          }
+        });
+      }
+    });
+
+  </script>
+</body>
+
+</html>
