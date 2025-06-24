@@ -64,4 +64,4 @@ $ python3 manage.py
 
 
 9. Customize Options (Optional)  
-To change archive or broadcast options, edit `manage.py`. By default, HLS broadcasting is enabled. If you'd like to broadcast to YouTube or other RTMP targets, use [the uncomment sections in start_broadcast()](https://github.com/ydumburs/opentok-experience-composer/blob/main/manage.py#L123).  
+To change archive or broadcast options, edit `manage.py`. By default, HLS broadcasting is enabled. If you'd like to broadcast to YouTube or other RTMP targets, use [the commented section in start_broadcast()](https://github.com/ydumburs/opentok-experience-composer/blob/main/manage.py#L123).  
