@@ -13,7 +13,7 @@ Each script can be used independently. Use `manage.py` alone when testing with e
 
 How to Use
 ======================
-1. Initial Setup Ref: https://developer.vonage.com/en/video/server-sdks/python
+1. Initial setup on a root folder Ref: https://developer.vonage.com/en/video/server-sdks/python
 ```
 $ python3 -m venv venv  
 $ source venv/bin/activate  
@@ -26,10 +26,11 @@ VIDEO_PROJECT_API_SECRET=       # Same as above
 VIDEO_SESSION_ID=               # Used by view.py for a web app where the actual publisher participates.
 VIDEO_TOKEN=                    # Same as above
 ```
+The `VIDEO_EXPERIENCE_COMPOSER_URL` can stay as it at this stage.  
 
 3. Start the Publisher/Subscriber Web App  
 ```
-$ python3 view.py
+(venv) $ python3 view.py
 ```
 
 4. This will automatically open `http://localhost:8080/subscribe`.  
@@ -39,19 +40,20 @@ You should see that it is being subscribed on the `http://localhost:8080/subscri
 
 
 
-5. To make the app accessible to be captured by Experience Composer:  
+5. To make the app accessible to be captured by Experience Composer, open a new Terminal and run:  
 ```
 $ ngrok http 8080
 ```
 
-6. Copy the public URL and update your `.env`:  
+6. Copy the public URL and append `/subscribe` to the end of it. Then replace the full URL into the `VIDEO_EXPERIENCE_COMPOSER_URL` field in your `.env`:  
 ```
 VIDEO_EXPERIENCE_COMPOSER_URL="https://<your-ngrok-url>/subscribe"
 ```
 
-7. Now that your EC target is ready, launch the management interface:  
+7. Now that your EC target is ready. Open a new Terminal in the root folder then launch the management interface:  
 ```
-$ python3 manage.py
+$ source venv/bin/activate  
+(venv) $ python3 manage.py
 ```
 
 8. This opens `http://localhost:5000/manage`.  
